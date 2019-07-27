@@ -13,11 +13,13 @@ config.read(os.path.join(__location__, '../config.ini'))
 app_id = config['MATHPIX']['app_id']
 app_key = config['MATHPIX']['app_key']
 
+
 def encode_image(filepath):
     with open(filepath, 'rb') as fp:
         image_uri = 'data:image/jpg;base64,{}'.format(
             base64.b64encode(fp.read()))
     return image_uri
+
 
 def predict(image_uri):
     r = requests.post('https://api.mathpix.com/v3/latex',
