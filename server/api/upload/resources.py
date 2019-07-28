@@ -2,6 +2,7 @@ from sanic.exceptions import abort
 from sanic.response import json as res_json
 from sanic_openapi import doc
 from server.api.upload import upload_api
+from server.api.upload.models import ResponseModel
 import os
 import time
 import urllib.parse
@@ -9,6 +10,7 @@ import urllib.parse
 
 @upload_api.post('/profile')
 @doc.summary('프로필 사진 업로드')
+@doc.produces(ResponseModel, content_type='application/json', description='성공')
 @doc.response(200, None, description='성공')
 @doc.response(500, None, description='에러')
 async def UploadProfile(request):

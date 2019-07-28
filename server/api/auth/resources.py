@@ -39,6 +39,7 @@ async def AuthJoin(request):
 @auth_api.post('/login')
 @doc.summary('로그인')
 @doc.consumes(LoginModel, content_type='application/json', location='body')
+@doc.produces(TokenModel, content_type='application/json', description='성공')
 @doc.response(404, None, description='잘못된 로그인 정보')
 async def AuthLogin(request):
     email, password = request.json['email'], request.json['password']
