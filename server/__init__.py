@@ -21,6 +21,7 @@ def create_app():
             _app.config.MONGO_DB]
 
     _app.blueprint(api)
+    _app.static('/uploads', './uploads')
 
     return _app
 
