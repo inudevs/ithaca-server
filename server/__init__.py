@@ -2,9 +2,10 @@ from sanic import Sanic, Blueprint
 from sanic_openapi import swagger_blueprint, doc
 from sanic_cors import CORS
 from sanic_jwt_extended import JWTManager
-from config import DevConfig
 from motor.motor_asyncio import AsyncIOMotorClient
+from config import DevConfig
 from server.api import api
+import school
 
 
 def create_app():
@@ -22,6 +23,7 @@ def create_app():
 
     _app.blueprint(api)
     _app.static('/uploads', './uploads')
+    _app.school = school
 
     return _app
 

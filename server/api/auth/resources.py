@@ -5,7 +5,6 @@ from sanic_jwt_extended import create_access_token, create_refresh_token
 from server.api.auth import auth_api
 from server.api.auth.models import LoginModel, TokenModel, UserModel
 
-
 @auth_api.post('/join')
 @doc.summary('회원가입')
 @doc.consumes(UserModel, content_type='application/json', location='body')
