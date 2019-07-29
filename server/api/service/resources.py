@@ -1,7 +1,7 @@
 from sanic.exceptions import abort
 from sanic.response import json as res_json
 from sanic_openapi import doc
-from server.api.question import service_api
+from server.api.service import service_api
 from bson import ObjectId
 
 

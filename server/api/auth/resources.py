@@ -27,7 +27,6 @@ async def AuthJoin(request):
         user = {}
         for key in keys:
             user[key] = request.json[key]
-        print(user)
     except BaseException:
         return res_json(404)
     res = await request.app.db.users.insert_one(user)
@@ -52,8 +51,11 @@ async def AuthLogin(request):
         abort(404)
 
     user['id'] = str(user['_id'])
+    for key in ['_id', 'password']:
+        del user[key]
+
     identity = {
-        'id': str(user['_id']),
+        'id': user['id'],
         'name': user['name']
     }
     token = await create_access_token(identity=identity, app=request.app)

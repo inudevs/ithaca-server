@@ -18,7 +18,10 @@ async def QuestionList(request, token: Token):
 @question_api.post('/')
 @jwt_required
 @doc.summary('질문 게시')
-@doc.consumes(CreateQuestionModel, content_type='application/json', location='body')
+@doc.consumes(
+    CreateQuestionModel,
+    content_type='application/json',
+    location='body')
 @doc.response(200, None, description='성공')
 async def QuestionPost(request, token: Token):
     user = token.jwt_identity
