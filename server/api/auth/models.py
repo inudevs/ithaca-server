@@ -7,7 +7,7 @@ class LoginModel:
 
 
 class UserModel:
-    id = doc.Integer('사용자 오브젝트 id')
+    id = doc.String('사용자 오브젝트 id')
     name = doc.String('이름')
     school = doc.String('학교')
     grade = doc.Integer('학년')
