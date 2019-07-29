@@ -24,3 +24,15 @@ async def UploadProfile(request):
     return res_json({
         'url': urllib.parse.urljoin('/uploads/', file_path)
     }, escape_forward_slashes=False)
+
+
+@upload_api.post('/prob')
+@doc.summary('문제 사진 업로드')
+async def UploadProb(request):
+    pass
+
+
+@upload_api.post('/math')
+@doc.summary('수식 업로드')
+async def UploadMath(request):
+    pass
