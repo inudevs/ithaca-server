@@ -5,13 +5,13 @@ from server.api.mentor import mentor_api
 from bson import ObjectId
 
 
-@mentor_api.post('/request/<question_id:ObjectId>')
+@mentor_api.post('/request/<question_id>')
 @doc.summary('멘토링 신청')
 async def MentoringRequest(request, question_id):
     pass
 
 
-@mentor_api.post('/approve/<question_id:ObjectId>')
+@mentor_api.post('/approve/<question_id>')
 @doc.summary('멘토링 승인')
 async def MentoringApprove(request, question_id):
     pass

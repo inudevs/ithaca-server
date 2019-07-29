@@ -17,8 +17,8 @@ async def test_join(test_cli):
     '''회원가입 테스트'''
     resp = await test_cli.post('/auth/join', json=user)
     assert resp.status in [
-        200, # 성공
-        400 # 이미 존재하는 사용자
+        200,  # 성공
+        400  # 이미 존재하는 사용자
     ]
 
     '''로그인 테스트'''
@@ -30,3 +30,5 @@ async def test_join(test_cli):
     resp_json = await resp.json()
     for key in ['token', 'refresh_token', 'user']:
         assert key in resp_json
+
+    return resp_json['token']
