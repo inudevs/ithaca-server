@@ -28,7 +28,11 @@ async def AuthJoin(request):
         for key in keys:
             user[key] = request.json[key]
     except BaseException:
-        return res_json(404)
+        return res_json(400)
+    if await request.app.db.users.find_one({
+        'email': user['email']
+    }):
+        abort(400)
     res = await request.app.db.users.insert_one(user)
     if not res.acknowledged:
         abort(500)
