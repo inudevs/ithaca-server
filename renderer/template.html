@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" />
+    <style>
+        h1 {
+            text-align: center;
+        }
+        table { 
+            width: 100%;
+            margin-bottom: 0.5rem;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        img {
+            width: 80%;
+            display: block;
+        }
+        .meta-left,
+        .meta-right {
+            width: 50%;
+            margin-bottom: 0.5rem;
+        }
+        .meta-left {
+            float: left;
+        }
+        .meta-right {
+            float: right;
+            text-align: right;
+        }
+        .meta-data {
+            display: block;
+        }
+        th.header {
+            text-align: center;
+        }
+        td.message {
+            width: 70%;
+        }
+    </style>
+</head>
+<body>
+    <h1>포트폴리오</h1>
+    <div class="meta">
+        <div class="meta-left">
+            <span class="meta-data">멘토: 천예준</span>
+            <span class="meta-data">멘티: 여준호</span>
+        </div>
+        <div class="meta-right">
+            <span class="meta-data">시작: 2019-07-25</span>
+            <span class="meta-data">종료: 2019-07-29</span>
+        </div>
+    </div>
+    <table class="question">
+        <thead>
+            <th colspan="2" class="header">
+                질문
+            </th>
+        </thead>
+        <tbody>
+            <tr>
+                <th>제목</th>
+                <td>{{ question.title }}</td>
+            </tr>
+            <tr>
+                <th>카테고리</th>
+                <td>{{ question.category }}</td>
+            </tr>
+            <tr>
+                <th>시간</th>
+                <td>{{ question.time }}</td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td>
+                    <img src="{{ question.photo }}">
+                    {{ question.article }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="chats">
+        <thead>
+            <tr>
+                <th colspan="3" class="header">
+                    멘토링
+                </th>
+            </tr>
+            <tr>
+                <th>보낸이</th>
+                <th>시간</th>
+                <th>메세지</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for chat in chats %}
+            <tr>
+                <td>{{ chat.sender }}</td>
+                <td>{{ chat.time }}</td>
+                <td class="message">{{ chat.message }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <table class="chats">
+        <thead>
+            <th colspan="2" class="header">
+                피드백
+            </th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>멘티({{ mentor }})의 피드백</td>
+                <td class="message">{{ feedback.mentor }}</td>
+            </tr>
+            <tr>
+                <td>멘티({{ mentee }})의 피드백</td>
+                <td class="message">{{ feedback.mentee }}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
