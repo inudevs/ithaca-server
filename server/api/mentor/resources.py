@@ -94,4 +94,4 @@ async def MentoringList(request, token: Token):
     questions += [await request.app.db.questions.find_one({
         '_id': ObjectId(req['question_id']),
     }) for req in requests]
-    return res_json({ 'mentorings': questions })
+    return res_json({'mentorings': questions})
