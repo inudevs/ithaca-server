@@ -45,7 +45,7 @@ async def MentoringApprove(request, token: Token, question_id):
     })
     if not question:
         abort(404)
-    
+
     # 다른 멘토링이 이미 승인된 것은 아닌지 확인
     if await request.app.db.requests.find_one({
         'question_id': question_id,
@@ -62,6 +62,16 @@ async def MentoringApprove(request, token: Token, question_id):
     })
     if not res.acknowledged:
         abort(500)
+
+    # question의 status 변경
+    res = await request.app.db.questions.update_one({'_id': ObjectId(question_id)}, {
+        '$set': {
+            'status': 'M'
+        }
+    })
+    if not res.acknowledged:
+        abort(500)
+
     return res_json({})
 
 

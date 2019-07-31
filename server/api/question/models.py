@@ -10,7 +10,9 @@ class QuestionModel:
     cartegory = doc.String('카테고리')
     photo = doc.String('문제 사진')  # URL for photo
     requests = doc.List(RequestModel)
-    status = doc.String()  # P for pending
+    # P for pending, M for matched,
+    # F for finished, C for completed with feedback
+    status = doc.String()
     portfolio = doc.String()  # URL for portfolio
 
 
