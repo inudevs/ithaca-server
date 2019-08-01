@@ -18,10 +18,7 @@ def memoize(f):
 def load_words():
     with open(os.path.join(__location__, './data.json'), 'r') as fp:
         data = json.load(fp)
-    words = {}
-    for word in data['school']:
-        words[word] = {}
-    return words
+    return data['school']
 
 
 words = load_words()

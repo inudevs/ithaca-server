@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import socketio
 from config import DevConfig
 import school
+import keywords
 
 
 sio = socketio.AsyncServer(async_mode='sanic')
@@ -28,6 +29,7 @@ def create_app():
     _app.blueprint(api)
     _app.static('/uploads', './uploads')
     _app.school = school
+    _app.keywords = keywords
 
     return _app
 

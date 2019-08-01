@@ -38,13 +38,18 @@ async def ChatView(request, token: Token, question_id):
     # 상태 확인 -> M이여야 함
     if question['status'] != 'M':
         abort(400)
-    
+
     # question_id로 chat 쿼리, timestamp로 정렬해 반환
     chats = await request.app.db.chats.find({
         'question_id': question_id
     }).sort('timestamp', pymongo.ASCENDING)
 
-    return res_json({ 'chats': chats })
+    for chat in chats:
+        chat['id'] = str(chat['_id'])
+        del chat['_id']
+        chat['keywords'] = request.app.keywords.search(chat['message'])
+
+    return res_json({'chats': chats})
 
 
 @service_api.post('/<question_id>')
@@ -96,6 +101,7 @@ async def ChatEnd(request, token: Token, question_id):
 
     await sio.emit('end', {}, room=question_id)
     return res_json({})
+
 
 @service_api.post('/request/teacher/<chat_id>')
 @jwt_required
