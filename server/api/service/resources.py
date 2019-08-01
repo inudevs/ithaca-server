@@ -45,7 +45,7 @@ async def ChatView(request, token: Token, question_id):
     }).sort('timestamp', pymongo.ASCENDING)
 
     teachers = await request.app.db.teachers.find({
-        'question_id': question_id        
+        'question_id': question_id
     })
 
     for chat in chats:
@@ -130,13 +130,13 @@ async def RequestTeacher(request, token: Token, chat_id):
     })
     if not question:
         abort(500, message='question을 찾을 수 없음')
-    
+
     mentor = await request.app.db.users.find_one({
         '_id': ObjectId(question['user_id'])
     })
     if not mentor:
         abort(500, message='mentor를 찾을 수 없음')
-    
+
     req = {
         'question_id': question['id'],
         'chat_id': chat['id'],

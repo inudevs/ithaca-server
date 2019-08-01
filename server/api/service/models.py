@@ -9,6 +9,7 @@ class ChatModel:
     message = doc.String()
     timestamp = doc.Integer()
 
+
 class TeacherRequestModel:
     id = doc.String('선생님 리뷰 요청 오브젝트 id')
     question_id = doc.String()

@@ -11,7 +11,7 @@ class Config(object):
     JWT_HEADER_TYPE = 'Bearer'
     JWT_SECRET_KEY = os.urandom(24)
     MONGO_URI = ''
-    UPLOAD_DIR = './uploads'
+    UPLOAD_PATH = '/uploads'
 
 
 class DevConfig(Config):

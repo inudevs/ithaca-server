@@ -21,7 +21,7 @@ def encode_image(filepath):
     return image_uri
 
 
-def predict(image_uri):
+def image_to_math(image_uri):
     r = requests.post('https://api.mathpix.com/v3/latex',
                       data=json.dumps({
                           'src': image_uri,
@@ -37,4 +37,4 @@ def predict(image_uri):
 
 if __name__ == '__main__':
     image_uri = encode_image('./test.png')
-    predict(image_uri)
+    image_to_math(image_uri)

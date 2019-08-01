@@ -3,9 +3,11 @@ from sanic.response import json as res_json
 from sanic_openapi import doc
 from server.api.upload import upload_api
 from server.api.upload.models import ResponseModel
+import mathpix
 import os
 import time
-import urllib.parse
+from urllib.parse import urljoin
+from functools import reduce
 
 
 @upload_api.post('/profile')
@@ -19,10 +21,10 @@ async def UploadProfile(request):
     timestamp = int(time.time())
     file_path = './profile/{}'.format(str(timestamp) + ext)
 
-    with open(os.path.join(request.app.config['UPLOAD_DIR'], file_path), 'wb') as fp:
+    with open(os.path.join('.{}'.format(request.app.config['UPLOAD_PATH']), file_path), 'wb') as fp:
         fp.write(profile_image.body)
     return res_json({
-        'url': urllib.parse.urljoin('/uploads/', file_path)
+        'url': urljoin(request.app.config['UPLOAD_PATH'], file_path)
     }, escape_forward_slashes=False)
 
 
@@ -35,4 +37,19 @@ async def UploadProb(request):
 @upload_api.post('/math')
 @doc.summary('수식 업로드')
 async def UploadMath(request):
-    pass
+    profile_image = request.files.get('file')
+    _, ext = os.path.splitext(profile_image.name)
+    timestamp = int(time.time())
+    file_path = './math/{}'.format(str(timestamp) + ext)
+
+    with open(os.path.join('.{}'.format(request.app.config['UPLOAD_PATH']), file_path), 'wb') as fp:
+        fp.write(profile_image.body)
+    image_url = reduce(urljoin, [
+        request.app.config['BASE_URL'],
+        request.app.config['UPLOAD_PATH'],
+        file_path
+    ])
+    return res_json({
+        'url': image_url,
+        'math': mathpix.api.image_to_math(image_url)
+    }, escape_forward_slashes=False)
