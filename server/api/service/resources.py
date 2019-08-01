@@ -5,6 +5,7 @@ from sanic_jwt_extended import jwt_required
 from sanic_jwt_extended.tokens import Token
 from server import sio
 from server.api.service import service_api
+import pymongo
 from bson import ObjectId
 import time
 
@@ -26,9 +27,23 @@ async def start_chat(sid, message):
 async def ChatView(request, token: Token, question_id):
     user = token.jwt_identity
 
-    # question_id로 question 쿼리, 상태 확인
+    # question_id로 question 쿼리
+    question = await request.app.db.questions.find_one({
+        '_id': ObjectId(question_id)
+    })
+    if not question:
+        abort(404)
+
+    # 상태 확인 -> M이여야 함
+    if question['status'] != 'M':
+        abort(400)
+    
     # question_id로 chat 쿼리, timestamp로 정렬해 반환
-    pass
+    chats = await request.app.db.chats.find({
+        'question_id': question_id
+    }).sort('timestamp', pymongo.ASCENDING)
+
+    return res_json({ 'chats': chats })
 
 
 @service_api.post('/<question_id>')
