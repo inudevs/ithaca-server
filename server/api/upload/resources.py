@@ -31,7 +31,22 @@ async def UploadProfile(request):
 @upload_api.post('/prob')
 @doc.summary('문제 사진 업로드')
 async def UploadProb(request):
-    pass
+    profile_image = request.files.get('file')
+    _, ext = os.path.splitext(profile_image.name)
+    timestamp = int(time.time())
+    file_path = './prob/{}'.format(str(timestamp) + ext)
+
+    with open(os.path.join('.{}'.format(request.app.config['UPLOAD_PATH']), file_path), 'wb') as fp:
+        fp.write(profile_image.body)
+    image_url = reduce(urljoin, [
+        request.app.config['BASE_URL'],
+        request.app.config['UPLOAD_PATH'],
+        file_path
+    ])
+    return res_json({
+        'url': image_url,
+        'category': '수학' # example output
+    }, escape_forward_slashes=False)
 
 
 @upload_api.post('/math')
