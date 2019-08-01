@@ -3,9 +3,21 @@ from sanic.response import json as res_json
 from sanic_openapi import doc
 from sanic_jwt_extended import jwt_required
 from sanic_jwt_extended.tokens import Token
+from server import sio
 from server.api.service import service_api
 from bson import ObjectId
 import time
+
+# 1. 사용자 채팅 접속 시 question_id로 client.emit
+# 2. 메세지를 보낼 때 question_id의 room에 서버가 뭔가를 emit
+#   -> client.on('something') 시 채팅이 업데이트 되었다는 것 -> reload
+# (프로토타입이므로 원시적으로? 구현)
+
+
+@sio.event
+async def start_chat(sid, message):
+    sio.enter_room(sid, message['question_id'])
+    await sio.emit('entered', {'success': True}, room=sid)
 
 
 @service_api.get('/<question_id>')
@@ -46,7 +58,8 @@ async def ChatPost(request, token: Token, question_id):
     res = await request.app.db.chats.insert_one(chat)
     if not res.acknowledged:
         abort(500)
-    # TODO: 양측에게 알람
+
+    request.app.sio.emit('update', {}, room=question_id)
     return res_json({})
 
 
