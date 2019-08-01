@@ -112,7 +112,7 @@ async def ChatEnd(request, token: Token, question_id):
     return res_json({})
 
 
-@service_api.post('/ request/teacher/<chat_id>')
+@service_api.post('/request/teacher/<chat_id>')
 @jwt_required
 @doc.summary('선생님 리뷰 요청')
 async def RequestTeacher(request, token: Token, chat_id):
