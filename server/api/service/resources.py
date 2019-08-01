@@ -44,9 +44,18 @@ async def ChatView(request, token: Token, question_id):
         'question_id': question_id
     }).sort('timestamp', pymongo.ASCENDING)
 
+    teachers = await request.app.db.teachers.find({
+        'question_id': question_id        
+    })
+
     for chat in chats:
         chat['id'] = str(chat['_id'])
         del chat['_id']
+        for teacher in teachers:
+            if (chat['id'] == teacher['chat_id']):
+                del teacher['question_id']
+                del teacher['chat_id']
+                chat['teacher'] = teacher
         chat['keywords'] = request.app.keywords.search(chat['message'])
 
     return res_json({'chats': chats})
@@ -103,20 +112,48 @@ async def ChatEnd(request, token: Token, question_id):
     return res_json({})
 
 
-@service_api.post('/request/teacher/<chat_id>')
+@service_api.post('/ request/teacher/<chat_id>')
 @jwt_required
 @doc.summary('선생님 리뷰 요청')
-async def RequestTeacher(request, token: Token, question_id):
+async def RequestTeacher(request, token: Token, chat_id):
     user = token.jwt_identity
 
     # chat_id로 question_id 구할 수 있음
-    pass
+    chat = await request.app.db.chats.find_one({
+        '_id': ObjectId(chat_id)
+    })
+    if not chat:
+        abort(404)
+
+    question = await request.app.db.questions.find_one({
+        '_id': ObjectId(chat['question_id'])
+    })
+    if not question:
+        abort(500, message='question을 찾을 수 없음')
+    
+    mentor = await request.app.db.users.find_one({
+        '_id': ObjectId(question['user_id'])
+    })
+    if not mentor:
+        abort(500, message='mentor를 찾을 수 없음')
+    
+    req = {
+        'question_id': question['id'],
+        'chat_id': chat['id'],
+        'school': mentor['school'],
+        'message': request.json['message'],
+        'timestamp': int(time.time())
+    }
+    res = await request.app.db.teachers.insert_one(user)
+    if not res.acknowledged:
+        abort(500)
+    return res_json({})
 
 
 @service_api.post('/request/offline/<chat_id>')
 @jwt_required
 @doc.summary('오프라인 멘토링 요청')
-async def RequestOffline(request, token: Token, question_id):
+async def RequestOffline(request, token: Token, chat_id):
     user = token.jwt_identity
 
     # chat_id로 question_id 구할 수 있음

@@ -21,10 +21,11 @@ async def AuthJoin(request):
             'klass',
             'number',
             'photo',
-            'user_type',
             'email',
             'password']
-        user = {}
+        user = {
+            'user_type': 'S'
+        }
         for key in keys:
             user[key] = request.json[key]
     except BaseException:
