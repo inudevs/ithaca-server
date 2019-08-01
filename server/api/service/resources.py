@@ -25,7 +25,8 @@ async def start_chat(sid, message):
 @jwt_required
 @doc.summary('대화 조회')
 async def ChatView(request, token: Token, question_id):
-    user = token.jwt_identity
+    # user = token.jwt_identity
+    # TODO: user['id']를 사용해서 사용자 정보 쿼리 근데 뭐 맞겠지
 
     # question_id로 question 쿼리
     question = await request.app.db.questions.find_one({
@@ -74,7 +75,7 @@ async def ChatPost(request, token: Token, question_id):
     if not res.acknowledged:
         abort(500)
 
-    request.app.sio.emit('update', {}, room=question_id)
+    await sio.emit('update', {}, room=question_id)
     return res_json({})
 
 
@@ -82,12 +83,19 @@ async def ChatPost(request, token: Token, question_id):
 @jwt_required
 @doc.summary('대화 종료')
 async def ChatEnd(request, token: Token, question_id):
-    user = token.jwt_identity
+    # user = token.jwt_identity
 
-    # question_id의 status 변경
-    # TODO: 양측에게 알람
-    pass
+    # question_id의 status를 F로 변경
+    res = await request.app.db.questions.update_one({'_id': ObjectId(question_id)}, {
+        '$set': {
+            'status': 'F'
+        }
+    })
+    if not res.acknowledged:
+        abort(500)
 
+    await sio.emit('end', {}, room=question_id)
+    return res_json({})
 
 @service_api.post('/request/teacher/<chat_id>')
 @jwt_required

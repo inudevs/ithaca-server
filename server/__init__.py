@@ -24,8 +24,6 @@ def create_app():
         _app.db = AsyncIOMotorClient(_app.config.MONGO_URI)[
             _app.config.MONGO_DB]
 
-    _app.sio = sio
-
     from server.api import api
     _app.blueprint(api)
     _app.static('/uploads', './uploads')
