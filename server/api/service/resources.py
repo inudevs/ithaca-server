@@ -112,6 +112,14 @@ async def ChatEnd(request, token: Token, question_id):
     return res_json({})
 
 
+@service_api.post('/feedback/<question_id>')
+@jwt_required
+@doc.summary('대화 피드백')
+async def ChatFeedback(request, token: Token, question_id):
+    user = token.jwt_identity
+    return res_json({})
+
+
 @service_api.post('/request/teacher/<chat_id>')
 @jwt_required
 @doc.summary('선생님 리뷰 요청')
