@@ -9,12 +9,13 @@ env = Environment(loader=FileSystemLoader(__location__))
 template = env.get_template('template.html')
 
 
-def render_pdf() -> str:
-    return
+def render_pdf(data, output_name) -> str:
+    output_path = './uploads/pdf/{}.pdf'.format(output_name)
+    pdfkit.from_string(template.render(data), output_path)
+    return output_path
 
 
 if __name__ == '__main__':
     with open(os.path.join(__location__, './test.json')) as fp:
         dummy = json.load(fp)
-    pdfkit.from_string(template.render(dummy), './report.pdf')
-    # 테스트 더미 데이터로 렌더링
+    render_pdf(dummy, 'test')

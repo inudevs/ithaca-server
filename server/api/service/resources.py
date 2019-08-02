@@ -5,8 +5,10 @@ from sanic_jwt_extended import jwt_required
 from sanic_jwt_extended.tokens import Token
 from server import sio
 from server.api.service import service_api
+from renderer import render_pdf
 import pymongo
 from bson import ObjectId
+from urllib.parse import urljoin
 import time
 
 # 1. 사용자 채팅 접속 시 question_id로 client.emit
@@ -173,7 +175,7 @@ async def RequestTeacher(request, token: Token, chat_id):
         'message': request.json['message'],
         'timestamp': int(time.time())
     }
-    res = await request.app.db.teachers.insert_one(user)
+    res = await request.app.db.teachers.insert_one(req)
     if not res.acknowledged:
         abort(500)
     return res_json({})
@@ -227,13 +229,89 @@ async def RequestOffline(request, token: Token, chat_id):
 @doc.summary('Render PDF file of mentoring')
 async def RenderPDF(request, question_id):
     # 1. query question
+    question = await request.app.db.questions.find_one({
+        '_id': ObjectId(question_id)
+    })
+    if not question:
+        abort(500, message='question을 찾을 수 없음')
+
     # 2. assert question status == C
+    if question['status'] != 'C':
+        abort(400, message='아직 끝나지 않은 멘토링')
+
     # 3. assert question has null in portfolio field
         # return value as url if value
+    if question['portfolio']:
+        return res_json({
+            'url': question['portfolio']
+        })
 
     # 4. get post, mentor from question
+    mentor = await request.app.db.users.find_one({
+        '_id': ObjectId(question['user_id'])
+    })
+    if not mentor:
+        abort(500, message='mentor를 찾을 수 없음')
+
     # 5. query requests to get mentee
+    req = await request.app.db.requests.find_one({
+        'question_id': question_id,
+        'approved': True
+    })
+    if not req:
+        abort(500, message='request를 찾을 수 없음')
+    
+    mentee = await request.app.db.users.find_one({
+        '_id': ObjectId(req['user_id'])
+    })
+    if not mentee:
+        abort(500, message='mentee를 찾을 수 없음')
+
     # 6. query chats
+    chats = await request.app.db.chats.find({
+        'question_id': question_id
+    }).sort('timestamp', pymongo.ASCENDING)
+
     # 7. query feedbacks
+    mentor_feedback = await request.app.db.feedbacks.find_one({
+        'question_id': question_id,
+        'sender': 'mentor'
+    })
+    mentee_feedback = await request.app.db.feedbacks.find_one({
+        'question_id': question_id,
+        'sender': 'mentee'
+    })
+
+    pdf_data = {
+        'subject': question['cartegory'],
+        'start_date': '',
+        'end_date': '',
+        'mentor': mentor['name'],
+        'mentee': mentee['name'],
+        'question': {
+            'category': question['category'],
+            'time': question['timestamp'],
+            'title': question['title'],
+            'article': question['article'],
+            'photo': question['photo'],
+        },
+        'chats': chats,
+        'feedbacks': {
+            'mentor': mentor_feedback,
+            'mentee': mentee_feedback
+        }
+    }
+
     # 8. render pdf
-    pass
+    file_path = render_pdf(pdf_data, question_id)
+    pdf_url = urljoin(request.app.config['BASE_URL'], file_path)
+    res = await request.app.db.questions.update_one({'_id': ObjectId(question_id)}, {
+        '$set': {
+            'portfolio': pdf_url
+        }
+    })
+    if not res.acknowledged:
+        abort(500)
+    return res_json({
+        'url': pdf_url
+    })
