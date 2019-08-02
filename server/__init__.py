@@ -1,4 +1,5 @@
 from sanic import Sanic, Blueprint
+from sanic.response import json as res_json
 from sanic_openapi import swagger_blueprint, doc
 from sanic_cors import CORS
 from sanic_jwt_extended import JWTManager
@@ -35,3 +36,12 @@ def create_app():
 
 
 app = create_app()
+
+
+@app.get('/')
+async def index(request):
+    return res_json({
+        'message': 'Welcome to Ithaca API Server',
+        'docs': '/swagger',
+        'github': 'https://github.com/inudevs/ithaca-server'
+    }, escape_forward_slashes=False)

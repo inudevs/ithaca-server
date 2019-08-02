@@ -222,6 +222,7 @@ async def RequestOffline(request, token: Token, chat_id):
     await sio.emit('update', {}, room=question['id'])
     return res_json({})
 
+
 @service_api.get('/pdf/<question_id>')
 @doc.summary('Render PDF file of mentoring')
 async def RenderPDF(request, question_id):
@@ -230,7 +231,7 @@ async def RenderPDF(request, question_id):
     # 3. assert question has null in portfolio field
         # return value as url if value
 
-    # 4. get post, mentor from question 
+    # 4. get post, mentor from question
     # 5. query requests to get mentee
     # 6. query chats
     # 7. query feedbacks
