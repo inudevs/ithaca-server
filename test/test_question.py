@@ -29,7 +29,6 @@ async def test_question_post(test_cli):
         'article',
         'cartegory',
         'photo',
-        'requests',
         'status',
         'portfolio']
     for key in question_keys:

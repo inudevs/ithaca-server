@@ -51,13 +51,12 @@ async def AuthLogin(request):
     user = await request.app.db.users.find_one({
         'email': email,
         'password': password
-    })
+    }, {'password':False})
     if not user:
         abort(404)
 
     user['id'] = str(user['_id'])
-    for key in ['_id', 'password']:
-        del user[key]
+    del user['_id']
 
     identity = {
         'id': user['id'],

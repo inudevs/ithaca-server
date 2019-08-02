@@ -6,13 +6,32 @@ from sanic_jwt_extended.tokens import Token
 from server.api.question import question_api
 from server.api.question.models import *
 from bson import ObjectId
+import pymongo
 
 
 @question_api.get('/')
 @jwt_required
 @doc.summary('질문 목록')
 async def QuestionList(request, token: Token):
-    pass
+    page = request.args.get('page') or 1
+    per_page = request.args.get('per_page') or 10
+    questions = await request.app.db.questions.find({
+    }).sort(
+        'timestamp', pymongo.ASCENDING
+    ).skip(
+        (page - 1) * per_page
+    ).limit(per_page)
+    for question in questions:
+        question['id'] = question['_id']
+        del question['_id']
+        question['user'] = await request.app.db.users.find_one({
+            '_id': ObjectId(question['user_id'])
+        }, {'_id': False})
+        del question['user_id']
+        question['requests'] = await request.app.db.requests.find({
+            'question_id': question['id']
+        }, {'_id': False})
+    return res_json({ 'questions': questions })
 
 
 @question_api.post('/')
@@ -27,7 +46,6 @@ async def QuestionPost(request, token: Token):
     user = token.jwt_identity
     question = {
         'user_id': user['id'],
-        'requests': [],
         'status': 'P',
         'portfolio': None
     }
@@ -55,4 +73,5 @@ async def QuestionView(request, token: Token, question_id):
     for idx, req in enumerate(question['requests']):
         question['requests'][idx]['id'] = str(req['_id'])
         # TODO: remove more fields
+    # TODO: fix this
     return res_json(question)
