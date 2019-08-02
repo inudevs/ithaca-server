@@ -8,6 +8,7 @@ motor==2.0.0
 pdfkit==0.6.1
 Sanic_Cors==0.9.8.post1
 pytest==5.0.1
+pytest-sanic==1.0.0
 xlrd==1.2.0
 beautifulsoup4==4.8.0
 gevent_socketio==0.3.6
