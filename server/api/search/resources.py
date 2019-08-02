@@ -7,5 +7,5 @@ from sanic_openapi import doc
 @doc.summary('학교 자동완성 검색')
 @doc.response(200, None, description='성공')
 async def SearchSchool(request, query):
-    res = request.app.school.autocomplete(query)
+    res = request.app.school.autocomplete(query)[:5]
     return res_json(res, ensure_ascii=False)
