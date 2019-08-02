@@ -13,16 +13,19 @@ import time
 async def TeacherJoin(request):
     pass
 
+
 @teacher_api.post('/login')
 @doc.summary('선생님 로그인')
 async def TeacherLogin(request):
     pass
+
 
 @teacher_api.get('/dashboard')
 @jwt_required
 @doc.summary('선생님 대시보드')
 async def TeacherDashboard(request, token: Token):
     pass
+
 
 @teacher_api.post('/answer/<request_id>')
 @jwt_required

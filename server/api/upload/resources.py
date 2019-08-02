@@ -45,7 +45,7 @@ async def UploadProb(request):
     ])
     return res_json({
         'url': image_url,
-        'category': '수학' # example output
+        'category': '수학'  # example output
     }, escape_forward_slashes=False)
 
 

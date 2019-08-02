@@ -117,7 +117,28 @@ async def ChatEnd(request, token: Token, question_id):
 @doc.summary('대화 피드백')
 async def ChatFeedback(request, token: Token, question_id):
     user = token.jwt_identity
-    return res_json({})
+    question = await request.app.db.questions.find_one({
+        '_id': ObjectId(question_id)
+    })
+    if not question:
+        abort(500, message='question을 찾을 수 없음')
+    if question['user_id'] == user['id']:
+        # user is mentee
+        sender = 'mentee'
+    else:
+        sender = 'mentor'
+
+    feedback = {
+        'question_id': question_id,
+        'sender': sender,
+        'user_id': user['id'],
+        'message': request.json['message'],
+        'timestamp': int(time.time())
+    }
+    res = await request.app.db.feedbacks.insert_one(feedback)
+    if not res.acknowledged:
+        abort(500)
+    return res_json({'id': str(res.inserted_id)})
 
 
 @service_api.post('/request/teacher/<chat_id>')

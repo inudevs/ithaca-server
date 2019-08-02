@@ -10,6 +10,15 @@ class ChatModel:
     timestamp = doc.Integer()
 
 
+class FeedbackModel:
+    id = doc.String('대화 오브젝트 id')
+    question_id = doc.String()
+    sender = doc.String()  # mentor, mentee
+    user_id = doc.String()
+    message = doc.String()
+    timestamp = doc.Integer()
+
+
 class TeacherRequestModel:
     id = doc.String('선생님 리뷰 요청 오브젝트 id')
     question_id = doc.String()
