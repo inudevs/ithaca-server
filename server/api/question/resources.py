@@ -15,6 +15,12 @@ import pymongo
 async def QuestionList(request, token: Token):
     page = request.args.get('page') or 1
     per_page = request.args.get('per_page') or 10
+    query = {
+        'status': request.args.get('status') or 'P',
+        'category': request.args.get('category')
+    }
+    if not query['category']:
+        del query['category']
     questions = await request.app.db.questions.find({
     }).sort(
         'timestamp', pymongo.ASCENDING
