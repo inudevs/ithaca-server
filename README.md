@@ -31,3 +31,18 @@
     - [ ] 선생님 로그인
     - [ ] 리뷰 요청 목록
     - [ ] 리뷰 요청 답변
+
+## Run
+Simple method:
+```
+sudo nohup /home/ubuntu/.local/bin/uvicorn server:app --host 0.0.0.0 --port 80
+```
+
+or use [nginx](https://www.nginx.com) or something
+
+## Config
+```python
+MONGO_URI = 'mongodb://example.com:59077' # mongoDB URI without DB name
+MONGO_DB = 'ithaca' # DB name
+BASE_URL = 'http://example.com/' # Base URL
+```
