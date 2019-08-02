@@ -79,7 +79,7 @@ async def ChatPost(request, token: Token, question_id):
 
     # user_id로 sender 구하고, text 타입의 chat 만들어 저장
     chat = {
-        'type': 'text',
+        'type': request.json['text'],
         'question_id': question_id,
         'sender': sender,
         'message': request.json['message'],
@@ -161,8 +161,42 @@ async def RequestTeacher(request, token: Token, chat_id):
 @service_api.post('/request/offline/<chat_id>')
 @jwt_required
 @doc.summary('오프라인 멘토링 요청')
+# model: { time, place, message }
 async def RequestOffline(request, token: Token, chat_id):
     user = token.jwt_identity
-
     # chat_id로 question_id 구할 수 있음
-    pass
+    chat = await request.app.db.chats.find_one({
+        '_id': ObjectId(chat_id)
+    })
+    if not chat:
+        abort(404)
+
+    question = await request.app.db.questions.find_one({
+        '_id': ObjectId(chat['question_id'])
+    })
+    if not question:
+        abort(500, message='question을 찾을 수 없음')
+    if question['user_id'] == user['id']:
+        # user is mentee
+        sender = 'mentee'
+    else:
+        sender = 'mentor'
+
+    # user_id로 sender 구하고, text 타입의 chat 만들어 저장
+    chat = {
+        'type': 'offline',
+        'question_id': question['id'],
+        'sender': sender,
+        'message': request.json['message'],
+        'timestamp': int(time.time()),
+        'offline': {
+            'time': request.json['time'],
+            'place': request.json['place']
+        }
+    }
+    res = await request.app.db.chats.insert_one(chat)
+    if not res.acknowledged:
+        abort(500)
+
+    await sio.emit('update', {}, room=question_id)
+    return res_json({})
