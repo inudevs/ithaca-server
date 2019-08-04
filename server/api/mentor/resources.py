@@ -82,11 +82,16 @@ async def MentoringApprove(request, token: Token, question_id):
 async def MentoringList(request, token: Token):
     user = token.jwt_identity
 
+    questions = {
+        'mentor': [], # user가 멘토인 questions
+        'mentee': [] # user가 멘티인 questions
+    }
+
     # 자신의 user_id를 가진 모든 question 쿼리 +
     cursor = request.app.db.questions.find({
         'user_id': user['id']
     })
-    questions = await cursor.to_list(length=50)
+    questions['mentee'] = await cursor.to_list(length=50)
 
     # 자신의 user_id를 가진 approve된 request 쿼리 -> question 쿼리
     cursor = request.app.db.requests.find({
@@ -94,7 +99,14 @@ async def MentoringList(request, token: Token):
         'approved': True,
     })
     requests = await cursor.to_list(length=50)
-    questions += [await request.app.db.questions.find_one({
+    questions['mentor'] = [await request.app.db.questions.find_one({
         '_id': ObjectId(req['question_id']),
     }) for req in requests]
+    
+    for question in questions['mentor']:
+        question['id'] = str(question['_id'])
+        del question['_id']
+    for question in questions['mentee']:
+        question['id'] = str(question['_id'])
+        del question['_id']
     return res_json({'mentorings': questions})

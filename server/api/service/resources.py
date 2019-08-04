@@ -83,7 +83,7 @@ async def ChatPost(request, token: Token, question_id):
 
     # user_id로 sender 구하고, text 타입의 chat 만들어 저장
     chat = {
-        'type': request.json['text'],
+        'type': 'text',
         'question_id': question_id,
         'sender': sender,
         'message': request.json['message'],

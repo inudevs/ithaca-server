@@ -115,11 +115,50 @@ async def test_for_scenario(test_cli):
     assert resp_json['requests'][0]['approved'] == True
         # 멘토링 request가 승인됨
 
-    # 클라1이 멘토링 리스트 조회, 채팅 보내기
-    # 클라2가 채팅 받기
+    # 클라1이 멘토링 리스트 조회
+    resp_status, resp_json = await client1.request(test_cli.get, '/mentor/')
+    assert resp_status == 200
+    # assert 'mentorings' in resp_json
+    # assert any(key in resp_json['mentorings'] for key in ['mentor', 'mentee'])
+    # assert len(resp_json['mentorings']['mentor']) == 0 # 얘는 질문만 올려서 멘티만 함
+
+    # 클라2이 멘토링 리스트 조회
+    resp_status, resp_json = await client2.request(test_cli.get, '/mentor/')
+    assert resp_status == 200
+    # assert 'mentorings' in resp_json
+    # assert any(key in resp_json['mentorings'] for key in ['mentor', 'mentee'])
+    # assert len(resp_json['mentorings']['mentee']) == 0 # 얘는 멘토링만 해줘서 멘토만 함
+
+    # 클라1이 대화 조회
+    resp_status, resp_json = await client1.request(test_cli.get, '/service/{}'.format(question_id))
+    assert resp_status == 200
+    # assert 'chats' in resp_json
+    # assert len(resp_json['chats']) == 0
+    print(resp_json)
+
+    # 클라1이 채팅 보내기
+    resp_status, _ = await client1.request(test_cli.post, '/service/{}'.format(question_id), {
+        'message': '안녕!'
+    })
+    assert resp_status == 200
+
+    # 클라2가 채팅 보내기
+    resp_status, _ = await client2.request(test_cli.post, '/service/{}'.format(question_id), {
+        'message': '우웅 나도 안뇽!!'
+    })
+    assert resp_status == 200
+
+    # 클라2가 채팅 확인
+    resp_status, resp_json = await client2.request(test_cli.get, '/service/{}'.format(question_id))
+    assert resp_status == 200
+    print(resp_json)
+    # ascending 순서가 맞는지도 체크해주자
+    # 나중에 생성된 게 뒤에 있는 거.. 일껄!!
+
     # 클라2가 수식 전송
     # 클라1이 채팅 받기 
     # 클라1이 클라2의 메세지로 선생님 리뷰 요청
     # 클라2가 채팅 받기
     # 클라1이 채팅 종료
+    # 둘 다 피드백 업로드
     # 클라이언트들이 멘토링 리스트 조회, 포트폴리오 출력
