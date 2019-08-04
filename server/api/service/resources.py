@@ -42,13 +42,15 @@ async def ChatView(request, token: Token, question_id):
         abort(400)
 
     # question_id로 chat 쿼리, timestamp로 정렬해 반환
-    chats = await request.app.db.chats.find({
+    cursor = request.app.db.chats.find({
         'question_id': question_id
     }).sort('timestamp', pymongo.ASCENDING)
+    chats = await cursor.to_list(length=50)
 
-    teachers = await request.app.db.teachers.find({
+    cursor = request.app.db.teachers.find({
         'question_id': question_id
     })
+    teachers = await cursor.to_list(length=50)
 
     for chat in chats:
         chat['id'] = str(chat['_id'])
@@ -268,9 +270,10 @@ async def RenderPDF(request, question_id):
         abort(500, message='mentee를 찾을 수 없음')
 
     # 6. query chats
-    chats = await request.app.db.chats.find({
+    cursor = request.app.db.chats.find({
         'question_id': question_id
     }).sort('timestamp', pymongo.ASCENDING)
+    chats = await cursor.to_list(length=50)
 
     # 7. query feedbacks
     mentor_feedback = await request.app.db.feedbacks.find_one({

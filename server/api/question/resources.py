@@ -21,12 +21,13 @@ async def QuestionList(request, token: Token):
     }
     if not query['category']:
         del query['category']
-    questions = await request.app.db.questions.find({
+    cursor = request.app.db.questions.find({
     }).sort(
         'timestamp', pymongo.ASCENDING
     ).skip(
         (page - 1) * per_page
     ).limit(per_page)
+    questions = await cursor.to_list(length=50)
     for question in questions:
         question['id'] = question['_id']
         del question['_id']
@@ -34,9 +35,10 @@ async def QuestionList(request, token: Token):
             '_id': ObjectId(question['user_id'])
         }, {'_id': False})
         del question['user_id']
-        question['requests'] = await request.app.db.requests.find({
+        cursor = request.app.db.requests.find({
             'question_id': question['id']
         }, {'_id': False})
+        question['requests'] = await cursor.to_list(length=50)
     return res_json({ 'questions': questions })
 
 
