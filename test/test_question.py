@@ -11,6 +11,9 @@ question = {
 
 
 async def test_question_post(test_cli):
+    # deprecated
+    return
+
     token = await test_join(test_cli)
     headers = create_headers(token)
 

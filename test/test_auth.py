@@ -14,6 +14,9 @@ user = {
 
 
 async def test_join(test_cli):
+    # deprecated
+    return
+
     '''회원가입 테스트'''
     resp = await test_cli.post('/auth/join', json=user)
     assert resp.status in [
