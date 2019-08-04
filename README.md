@@ -42,7 +42,7 @@ or use [nginx](https://www.nginx.com) or something
 
 ## Config
 ```python
-MONGO_URI = 'mongodb://example.com:59077' # mongoDB URI without DB name
+MONGO_URI = 'mongodb://example.com:59077/ithaca' # mongoDB URI with/without DB name
 MONGO_DB = 'ithaca' # DB name
 BASE_URL = 'http://example.com/' # Base URL
 ```
