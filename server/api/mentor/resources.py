@@ -34,14 +34,15 @@ async def MentoringRequest(request, token: Token, question_id):
 
 
 @mentor_api.post('/approve/<question_id>')
+@jwt_required
 @doc.summary('멘토링 승인')
 async def MentoringApprove(request, token: Token, question_id):
     user = token.jwt_identity
 
     # question 쿼리, 작성자 확인
-    question = await request.app.db.requests.find_one({
+    question = await request.app.db.questions.find_one({
+        '_id': ObjectId(question_id),
         'user_id': user['id'],
-        'question_id': question_id,
     })
     if not question:
         abort(404)

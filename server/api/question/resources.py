@@ -29,7 +29,7 @@ async def QuestionList(request, token: Token):
     ).limit(per_page)
     questions = await cursor.to_list(length=50)
     for question in questions:
-        question['id'] = question['_id']
+        question['id'] = str(question['_id'])
         del question['_id']
         question['user'] = await request.app.db.users.find_one({
             '_id': ObjectId(question['user_id'])
