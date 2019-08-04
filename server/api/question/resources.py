@@ -71,13 +71,16 @@ async def QuestionPost(request, token: Token):
 async def QuestionView(request, token: Token, question_id):
     question = await request.app.db.questions.find_one({
         '_id': ObjectId(question_id)
-    })
+    }, {'_id':False})
     if not question:
         abort(404)
-    question['id'] = str(question['_id'])
-    del question['_id']
+    question['id'] = question_id
+    cursor = request.app.db.requests.find({
+        'question_id': question_id
+    })
+    question['requests'] = await cursor.to_list(length=50)
     for idx, req in enumerate(question['requests']):
         question['requests'][idx]['id'] = str(req['_id'])
-        # TODO: remove more fields
+        del question['requests'][idx]['_id']
     # TODO: fix this
     return res_json(question)
