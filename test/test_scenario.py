@@ -27,7 +27,7 @@ user_data = [
 question_data = {
     'title': '이걸 모르겠어요',
     'article': '도와주세요ㅜㅜ 진짜 알다가도 모르겠습니다',
-    'cartegory': '수학',
+    'category': '수학',
     'photo': 'https://via.placeholder.com/500x300'
 }
 
@@ -154,11 +154,42 @@ async def test_for_scenario(test_cli):
     print(resp_json)
     # ascending 순서가 맞는지도 체크해주자
     # 나중에 생성된 게 뒤에 있는 거.. 일껄!!
+    chat_id = resp_json['chats'][1]['id']
 
     # 클라2가 수식 전송
     # 클라1이 채팅 받기 
+
     # 클라1이 클라2의 메세지로 선생님 리뷰 요청
+    resp_status, _ = await client1.request(test_cli.post, '/service/request/teacher/{}'.format(chat_id), {
+        'message': '쌤~ 이걸 아무리 봐도 모르겠어요...!'
+    })
+    assert resp_status == 200
+
     # 클라2가 채팅 받기
+    resp_status, resp_json = await client2.request(test_cli.get, '/service/{}'.format(question_id))
+    assert resp_status == 200
+    print(resp_json)
+
     # 클라1이 채팅 종료
+    resp_status, _ = await client1.request(test_cli.delete, '/service/{}'.format(question_id))
+    assert resp_status == 200
+
     # 둘 다 피드백 업로드
+    resp_status, resp_json = await client1.request(test_cli.post, '/service/feedback/{}'.format(question_id), {
+        'message': '정말 친절하게 가르쳐 줘서 정말 좋았어요. 특히, 구구단을 잘 알려줘서 좋았어요!'
+    })
+    print(resp_status, resp_json)
+    resp_status, resp_json = await client2.request(test_cli.post, '/service/feedback/{}'.format(question_id), {
+        'message': '배우려는 열정이 가득한 친구였어요! 앞으로는 숫자의 사칙연산 부분을 조금 더 공부하면 좋을 것 같아요^^'
+    })
+    print(resp_status, resp_json)
+
     # 클라이언트들이 멘토링 리스트 조회, 포트폴리오 출력
+    resp_status, resp_json = await client1.request(test_cli.get, '/mentor/')
+    print(resp_status, resp_json)
+    resp_status, resp_json = await client1.request(test_cli.get, '/service/pdf/{}'.format(question_id))
+    assert resp_status == 200
+    assert 'url' in resp_json
+
+    import urllib.request
+    urllib.request.urlretrieve(resp_json['url'], 'report.pdf')

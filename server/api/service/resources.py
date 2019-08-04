@@ -59,9 +59,12 @@ async def ChatView(request, token: Token, question_id):
             if (chat['id'] == teacher['chat_id']):
                 del teacher['question_id']
                 del teacher['chat_id']
+                teacher['id'] = str(teacher['_id'])
+                del teacher['_id']
                 chat['teacher'] = teacher
         chat['keywords'] = request.app.keywords.search(chat['message'])
 
+    print(chats)
     return res_json({'chats': chats})
 
 
@@ -132,6 +135,18 @@ async def ChatFeedback(request, token: Token, question_id):
     else:
         sender = 'mentor'
 
+    # 같은 question_id의 feedback 찾고 있으면 question의 status를 C로 바꿈
+    if await request.app.db.feedbacks.find_one({
+        'question_id': question_id
+    }):
+        res = await request.app.db.questions.update_one({'_id': ObjectId(question_id)}, {
+            '$set': {
+                'status': 'C'
+            }
+        })
+        if not res.acknowledged:
+            abort(500)
+
     feedback = {
         'question_id': question_id,
         'sender': sender,
@@ -142,6 +157,7 @@ async def ChatFeedback(request, token: Token, question_id):
     res = await request.app.db.feedbacks.insert_one(feedback)
     if not res.acknowledged:
         abort(500)
+
     return res_json({'id': str(res.inserted_id)})
 
 
@@ -171,8 +187,8 @@ async def RequestTeacher(request, token: Token, chat_id):
         abort(500, message='mentor를 찾을 수 없음')
 
     req = {
-        'question_id': question['id'],
-        'chat_id': chat['id'],
+        'question_id': chat['question_id'],
+        'chat_id': chat_id,
         'school': mentor['school'],
         'message': request.json['message'],
         'timestamp': int(time.time())
@@ -286,7 +302,7 @@ async def RenderPDF(request, question_id):
     })
 
     pdf_data = {
-        'subject': question['cartegory'],
+        'subject': question['category'],
         'start_date': '',
         'end_date': '',
         'mentor': mentor['name'],

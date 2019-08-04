@@ -7,7 +7,7 @@ class QuestionModel:
     user_id = doc.Integer('작성자 오브젝트 id')
     title = doc.String('제목')
     article = doc.String('본문')
-    cartegory = doc.String('카테고리')
+    category = doc.String('카테고리')
     photo = doc.String('문제 사진')  # URL for photo
     requests = doc.List(RequestModel)
     # P for pending, M for matched,
@@ -19,5 +19,5 @@ class QuestionModel:
 class CreateQuestionModel:
     title = doc.String('제목')
     article = doc.String('본문')
-    cartegory = doc.String('카테고리')
+    category = doc.String('카테고리')
     photo = doc.String('문제 사진')  # URL for photo

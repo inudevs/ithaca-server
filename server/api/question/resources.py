@@ -7,6 +7,7 @@ from server.api.question import question_api
 from server.api.question.models import *
 from bson import ObjectId
 import pymongo
+import time
 
 
 @question_api.get('/')
@@ -55,9 +56,10 @@ async def QuestionPost(request, token: Token):
     question = {
         'user_id': user['id'],
         'status': 'P',
-        'portfolio': None
+        'portfolio': None,
+        'timestamp': time.time()
     }
-    keys = ['title', 'article', 'cartegory', 'photo']
+    keys = ['title', 'article', 'category', 'photo']
     for key in keys:
         question[key] = request.json[key]
     res = await request.app.db.questions.insert_one(question)
