@@ -2,6 +2,12 @@ import pdfkit
 from jinja2 import Environment, FileSystemLoader
 import json
 import os.path
+import platform
+
+if platform.system() not in ['Darwin', 'Windows']: # Cloud maybe...?
+    from pyvirtualdisplay import Display
+    display = Display(visible=0, size=(600,600))
+    display.start()
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
