@@ -8,7 +8,6 @@ user_data = [
         'klass': 1,
         'number': 1,
         'photo': 'https://via.placeholder.com/128',
-        'user_type': 'S',
         'email': 'test@example.com',
         'password': 'test'
     }, {
@@ -18,7 +17,6 @@ user_data = [
         'klass': 1,
         'number': 2,
         'photo': 'https://via.placeholder.com/128',
-        'user_type': 'S',
         'email': 'hello@example.com',
         'password': 'test'
     }
@@ -190,6 +188,8 @@ async def test_for_scenario(test_cli):
     resp_status, resp_json = await client1.request(test_cli.get, '/service/pdf/{}'.format(question_id))
     assert resp_status == 200
     assert 'url' in resp_json
+    print(resp_json['url'])
+    # BASE_URL 때문에 서버 켜고 돌려야 할거임
 
-    import urllib.request
-    urllib.request.urlretrieve(resp_json['url'], 'report.pdf')
+    # import urllib.request
+    # urllib.request.urlretrieve(resp_json['url'], 'report.pdf')

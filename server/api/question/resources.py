@@ -57,7 +57,7 @@ async def QuestionPost(request, token: Token):
         'user_id': user['id'],
         'status': 'P',
         'portfolio': None,
-        'timestamp': time.time()
+        'timestamp': int(time.time())
     }
     keys = ['title', 'article', 'category', 'photo']
     for key in keys:
