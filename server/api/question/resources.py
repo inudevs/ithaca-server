@@ -39,7 +39,9 @@ async def QuestionList(request, token: Token):
         cursor = request.app.db.requests.find({
             'question_id': question['id']
         }, {'_id': False})
-        question['requests'] = await cursor.to_list(length=50)
+        reqs = await cursor.to_list(length=50)
+        question['requests'] = len(reqs)
+        question['views'] = 0
     return res_json({ 'questions': questions })
 
 
