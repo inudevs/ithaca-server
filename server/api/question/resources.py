@@ -81,6 +81,9 @@ async def QuestionView(request, token: Token, question_id):
     if not question:
         abort(404)
     question['id'] = question_id
+    question['user'] = await request.app.db.users.find_one({
+            '_id': ObjectId(question['user_id'])
+        }, {'_id': False})
     cursor = request.app.db.requests.find({
         'question_id': question_id
     })
