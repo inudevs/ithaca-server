@@ -75,11 +75,14 @@ async def QuestionPost(request, token: Token):
 @doc.response(200, None, description='성공')
 @doc.summary('질문 조회')
 async def QuestionView(request, token: Token, question_id):
+    user = token.jwt_identity
     question = await request.app.db.questions.find_one({
         '_id': ObjectId(question_id)
     }, {'_id':False})
     if not question:
         abort(404)
+    if question['user_id'] == user['id']:
+        question['mine'] = True
     question['id'] = question_id
     question['user'] = await request.app.db.users.find_one({
             '_id': ObjectId(question['user_id'])
