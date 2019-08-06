@@ -111,7 +111,17 @@ async def MentoringList(request, token: Token):
     for question in questions['mentor']:
         question['id'] = str(question['_id'])
         del question['_id']
+        cursor = request.app.db.requests.find({
+            'question_id': question['id']
+        }, {'_id': False})
+        reqs = await cursor.to_list(length=50)
+        question['requests'] = len(reqs)
     for question in questions['mentee']:
         question['id'] = str(question['_id'])
         del question['_id']
+        cursor = request.app.db.requests.find({
+            'question_id': question['id']
+        }, {'_id': False})
+        reqs = await cursor.to_list(length=50)
+        question['requests'] = len(reqs)
     return res_json({'mentorings': questions})
