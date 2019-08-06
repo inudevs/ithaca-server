@@ -83,9 +83,14 @@ async def MentoringList(request, token: Token):
     user = token.jwt_identity
 
     questions = {
+        'user': {},
         'mentor': [], # user가 멘토인 questions
         'mentee': [] # user가 멘티인 questions
     }
+
+    questions['user'] = await request.app.db.users.find_one({
+        '_id': ObjectId(user['id']),
+    }, {'_id': False})
 
     # 자신의 user_id를 가진 모든 question 쿼리 +
     cursor = request.app.db.questions.find({
