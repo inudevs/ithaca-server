@@ -91,7 +91,7 @@ async def QuestionView(request, token: Token, question_id):
     for idx, req in enumerate(question['requests']):
         question['requests'][idx]['id'] = str(req['_id'])
         del question['requests'][idx]['_id']
-        question['requests']['idx']['user'] = await request.app.db.users.find_one({
+        question['requests'][idx]['user'] = await request.app.db.users.find_one({
             '_id': ObjectId(question['user_id'])
         }, {'_id': False})
     # TODO: fix this
