@@ -15,7 +15,7 @@
         table, th, td {
             border: 1px solid black;
         }
-        img {
+        img.hi {
             width: 80%;
             display: block;
         }
@@ -76,7 +76,7 @@
             <tr>
                 <th>내용</th>
                 <td>
-                    <img src="{{ question.photo }}">
+                    <img src="{{ question.photo }}" class="hi">
                     {{ question.article }}
                 </td>
             </tr>
@@ -100,7 +100,13 @@
             <tr>
                 <td>{{ chat.sender }}</td>
                 <td>{{ chat.time }}</td>
-                <td class="message">{{ chat.message }}</td>
+                {% if chat.message != '-' %}
+                    <td class="message">{{ chat.message }}</td>
+                {% else %}
+                    <td class="message">
+                        <img src="{{ chat.image }}">
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>
